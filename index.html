@@ -123,8 +123,8 @@ header{display:flex;align-items:center;gap:0}
 main{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 20px 80px;min-height:0;-webkit-overflow-scrolling:touch}
 
 /* ── VIEWS ── */
-.view-section{display:none}
-.view-section.active{display:block;animation:fadeUp .32s cubic-bezier(.16,1,.3,1)}
+.view-section{display:none!important}
+.view-section.active{display:block!important;animation:fadeUp .32s cubic-bezier(.16,1,.3,1)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
@@ -499,7 +499,7 @@ html{transition:background .3s,color .3s}
 </head>
 <body>
 
-<div id="app-shell">
+<div id="app-shell" style="display:flex;width:100%;height:100%;overflow:hidden">
 <div id="mob-bg" class="mob-bg" onclick="closeSidebar()"></div>
 
 <!-- ══ SIDEBAR ══ -->
@@ -519,25 +519,25 @@ html{transition:background .3s,color .3s}
   <nav>
     <div class="nav-sec">Main</div>
     <button class="nav-btn active" data-view="dashboard"><span class="nav-icon">◈</span>Dashboard</button>
-    <button class="nav-btn" data-view="contacts"><span class="nav-icon">◎</span>Contacts<span class="nav-badge" id="nb-c">0</span></button>
-    <button class="nav-btn" data-view="projects"><span class="nav-icon">⬡</span>Projects<span class="nav-badge" id="nb-p">0</span></button>
+    <button class="nav-btn" data-view="contacts" onclick="switchView('contacts')"><span class="nav-icon">◎</span>Contacts<span class="nav-badge" id="nb-c">0</span></button>
+    <button class="nav-btn" data-view="projects" onclick="switchView('projects')"><span class="nav-icon">⬡</span>Projects<span class="nav-badge" id="nb-p">0</span></button>
     <div class="nav-sec">Finance</div>
-    <button class="nav-btn" data-view="payments"><span class="nav-icon">◉</span>Payments</button>
-    <button class="nav-btn" data-view="reports"><span class="nav-icon">▤</span>Reports & PDF</button>
+    <button class="nav-btn" data-view="payments" onclick="switchView('payments')"><span class="nav-icon">◉</span>Payments</button>
+    <button class="nav-btn" data-view="reports" onclick="switchView('reports')"><span class="nav-icon">▤</span>Reports & PDF</button>
     <div class="nav-sec">Tools</div>
-    <button class="nav-btn" data-view="estimates"><span class="nav-icon">📋</span>Estimates</button>
-    <button class="nav-btn" data-view="expenses"><span class="nav-icon">💸</span>Expenses</button>
-    <button class="nav-btn" data-view="analytics"><span class="nav-icon">📈</span>Analytics</button>
-    <button class="nav-btn" data-view="tools"><span class="nav-icon">🔧</span>Tools</button>
+    <button class="nav-btn" data-view="estimates" onclick="switchView('estimates')"><span class="nav-icon">📋</span>Estimates</button>
+    <button class="nav-btn" data-view="expenses" onclick="switchView('expenses')"><span class="nav-icon">💸</span>Expenses</button>
+    <button class="nav-btn" data-view="analytics" onclick="switchView('analytics')"><span class="nav-icon">📈</span>Analytics</button>
+    <button class="nav-btn" data-view="tools" onclick="switchView('tools')"><span class="nav-icon">🔧</span>Tools</button>
     <div class="nav-sec">Manage</div>
-    <button class="nav-btn" data-view="settings"><span class="nav-icon">⚙</span>Settings & Sync</button>
+    <button class="nav-btn" data-view="settings" onclick="switchView('settings')"><span class="nav-icon">⚙</span>Settings & Sync</button>
     <div style="height:1px;background:rgba(255,255,255,.1);margin:8px 14px"></div>
     <button class="nav-btn" data-view="clientportal" style="color:var(--gold2);font-weight:700" onclick="openClientPortalMgr()"><span class="nav-icon">👥</span>Client Portal</button>
-    <button class="nav-btn" data-view="udcpr"><span class="nav-icon">📏</span>UDCPR 2020</button>
-    <button class="nav-btn" data-view="agreement"><span class="nav-icon">📝</span>Agreement</button>
-    <button class="nav-btn" data-view="invoice"><span class="nav-icon">🧾</span>GST Invoice</button>
-    <button class="nav-btn" data-view="timeline"><span class="nav-icon">📅</span>Timeline</button>
-    <button class="nav-btn" data-view="materials"><span class="nav-icon">🧱</span>Materials</button>
+    <button class="nav-btn" data-view="udcpr" onclick="switchView('udcpr')"><span class="nav-icon">📏</span>UDCPR 2020</button>
+    <button class="nav-btn" data-view="agreement" onclick="switchView('agreement')"><span class="nav-icon">📝</span>Agreement</button>
+    <button class="nav-btn" data-view="invoice" onclick="switchView('invoice')"><span class="nav-icon">🧾</span>GST Invoice</button>
+    <button class="nav-btn" data-view="timeline" onclick="switchView('timeline')"><span class="nav-icon">📅</span>Timeline</button>
+    <button class="nav-btn" data-view="materials" onclick="switchView('materials')"><span class="nav-icon">🧱</span>Materials</button>
   </nav>
   <div class="sidebar-footer">
     <div class="user-row">
@@ -2325,24 +2325,36 @@ function renderView(v){
   else if(typeof renderDashboard==='function') renderDashboard();
 }
 function switchView(v){
-  document.querySelectorAll('.view-section').forEach(function(e){e.classList.remove('active');});
+  if(!v) return;
+  // Hide all views
+  document.querySelectorAll('.view-section').forEach(function(e){
+    e.classList.remove('active');
+    e.style.display='none';
+  });
+  // Show selected view
   var viewEl=document.getElementById('view-'+v);
-  if(viewEl) viewEl.classList.add('active');
+  if(viewEl){
+    viewEl.classList.add('active');
+    viewEl.style.display='block';
+  }
+  // Update nav
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
   var nb=document.querySelector('.nav-btn[data-view="'+v+'"]');
   if(nb) nb.classList.add('active');
   var titleEl=document.getElementById('page-title');
-  if(titleEl) titleEl.textContent=VIEW_TITLES[v]||v;
-  // Skeleton flash for heavier views
-  var skelMap={contacts:'cc-list',payments:'pay-list',analytics:'an-kpi'};
-  var skelEl=skelMap[v]?document.getElementById(skelMap[v]):null;
-  if(skelEl&&typeof showSkeleton==='function'){
-    var skelType=v==='contacts'?'cards':v==='analytics'?'cards':'list';
-    showSkeleton(skelMap[v],3,skelType);
-    setTimeout(function(){renderView(v);},140);
-  } else {
-    renderView(v);
-  }
+  if(titleEl) titleEl.textContent=(VIEW_TITLES&&VIEW_TITLES[v])||v;
+  // Render view
+  try{
+    var skelMap={contacts:'cc-list',payments:'pay-list',analytics:'an-kpi'};
+    var skelEl=skelMap[v]?document.getElementById(skelMap[v]):null;
+    if(skelEl&&typeof showSkeleton==='function'){
+      var skelType=v==='contacts'?'cards':v==='analytics'?'cards':'list';
+      showSkeleton(skelMap[v],3,skelType);
+      setTimeout(function(){renderView(v);},140);
+    } else {
+      renderView(v);
+    }
+  }catch(err){console.error('renderView error:',v,err);}
   closeSidebar();
 }
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
@@ -2393,7 +2405,8 @@ function renderDashboard(){
   const tv=db.projects.reduce((a,p)=>a+p.total,0);
   const tr=db.payments.reduce((a,p)=>a+p.amount,0);
   const tb=db.projects.reduce((a,p)=>a+pbal(p.id),0);
-  document.getElementById('kpi-grid').innerHTML=`
+  var _kg=document.getElementById('kpi-grid');if(!_kg)return;
+  _kg.innerHTML=`
     <div class="kpi-card"><div class="kpi-lbl">Projects</div><div class="kpi-val au">${db.projects.length}</div><div class="kpi-sub">Active</div></div>
     <div class="kpi-card"><div class="kpi-lbl">Total Value</div><div class="kpi-val">${fmt(tv)}</div><div class="kpi-sub">All projects</div></div>
     <div class="kpi-card"><div class="kpi-lbl">Received</div><div class="kpi-val g">${fmt(tr)}</div><div class="kpi-sub">Total payments</div></div>
@@ -3348,13 +3361,16 @@ function renderReport(){
 // ════════════════════════════════════════════════
 function renderSettings(){
   setTimeout(initApiKeySettings, 100);
-  document.getElementById('s-office-name').value=officeInfo.name||'';
-  document.getElementById('s-arch-name').value=officeInfo.arch||'';
-  document.getElementById('s-office-addr').value=officeInfo.addr||'';
-  document.getElementById('s-phone').value=officeInfo.phone||'';
-  document.getElementById('s-email').value=officeInfo.email||'';
-  document.getElementById('last-saved').textContent=localStorage.getItem('gs_saved')||'—';
-  document.getElementById('data-counts').textContent=`${(db.contacts||[]).length} contacts, ${(db.projects||[]).length} projects, ${(db.payments||[]).length} payments`;
+  // Safe setters — avoid null errors when elements not visible yet
+  function sv(id,val){var e=document.getElementById(id);if(e)e.value=val;}
+  function st(id,val){var e=document.getElementById(id);if(e)e.textContent=val;}
+  sv('s-office-name',officeInfo.name||'');
+  sv('s-arch-name',officeInfo.arch||'');
+  sv('s-office-addr',officeInfo.addr||'');
+  sv('s-phone',officeInfo.phone||'');
+  sv('s-email',officeInfo.email||'');
+  st('last-saved',localStorage.getItem('gs_saved')||'—');
+  st('data-counts',`${(db.contacts||[]).length} contacts, ${(db.projects||[]).length} projects, ${(db.payments||[]).length} payments`);
   // Sync mode display
   const descEl=document.getElementById('sync-mode-desc');
   const infoEl=document.getElementById('sync-info-box');
@@ -7882,27 +7898,32 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.btn-p,.btn-gold,.fab').forEach(b=>b.addEventListener('click',addRipple));
 });
 
-window.addEventListener('DOMContentLoaded',async ()=>{
+document.addEventListener('DOMContentLoaded',async ()=>{
   initTheme();
   initViewPrefs();
   loadLocal();
+  ensureDbExtensions();
   // ── URL Hash → Client Portal Mode ──
   checkPortalMode();
-  ensureDbExtensions();
-  renderDashboard();
-  renderContacts();
-  renderProjects();
-  renderPayments();
-  renderReports();
-  renderEstimates();
-  renderExpenses();
-  renderSettings();
-  await loadRemoteData();
-  ensureDbExtensions();
-  refreshAll();
-  loadSavedFirebaseConfig();
-  setInterval(pollRemote,6000);
-  setSyncStatus('gray','Ready — Connect Firebase for sync');
+  // Render only active view on load
+  try{renderDashboard();}catch(e){console.warn('dash:',e);}
+  // Update nav badges
+  try{
+    var nc=document.getElementById('nb-c');if(nc)nc.textContent=(db.contacts||[]).length;
+    var np=document.getElementById('nb-p');if(np)np.textContent=(db.projects||[]).length;
+  }catch(e){}
+  // Load Firebase
+  try{loadSavedFirebaseConfig();}catch(e){}
+  setSyncStatus('gray','Ready');
+  // Load remote data async
+  setTimeout(async()=>{
+    try{
+      await loadRemoteData();
+      ensureDbExtensions();
+      refreshAll();
+    }catch(e){console.warn('Remote:',e);}
+    setInterval(pollRemote,6000);
+  },500);
 });
 </script>
 
