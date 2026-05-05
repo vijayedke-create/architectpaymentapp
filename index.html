@@ -7882,27 +7882,35 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.btn-p,.btn-gold,.fab').forEach(b=>b.addEventListener('click',addRipple));
 });
 
-window.addEventListener('DOMContentLoaded',async ()=>{
-  initTheme();
-  initViewPrefs();
-  loadLocal();
-  // ── URL Hash → Client Portal Mode ──
-  checkPortalMode();
-  ensureDbExtensions();
-  renderDashboard();
-  renderContacts();
-  renderProjects();
-  renderPayments();
-  renderReports();
-  renderEstimates();
-  renderExpenses();
-  renderSettings();
-  await loadRemoteData();
-  ensureDbExtensions();
-  refreshAll();
-  loadSavedFirebaseConfig();
-  setInterval(pollRemote,6000);
-  setSyncStatus('gray','Ready — Connect Firebase for sync');
+document.addEventListener('DOMContentLoaded',async ()=>{
+  try{
+    initTheme();
+    initViewPrefs();
+    loadLocal();
+    // ── URL Hash → Client Portal Mode ──
+    checkPortalMode();
+    ensureDbExtensions();
+    renderDashboard();
+    renderContacts();
+    renderProjects();
+    renderPayments();
+    renderReports();
+    renderEstimates();
+    renderExpenses();
+    renderSettings();
+    loadSavedFirebaseConfig();
+    setSyncStatus('gray','Ready — Connect Firebase for sync');
+    try{
+      await loadRemoteData();
+      ensureDbExtensions();
+      refreshAll();
+    }catch(e){console.warn('Remote load:',e);}
+    setInterval(pollRemote,6000);
+  }catch(err){
+    console.error('Init error:',err);
+    // Fallback — still show dashboard
+    try{renderDashboard();}catch(e){}
+  }
 });
 </script>
 
