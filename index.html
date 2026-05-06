@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <title>Greenhouse Studio — Vijay Edke, Solapur</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <!-- Charts + PDF -->
@@ -7803,8 +7805,10 @@ function toggleTheme(){
 // CLIENT PORTAL — URL HASH MODE
 // ════════════════════════════════════════════════
 function checkPortalMode(){
+  // Check both ?portal param AND #portal hash (for backward compat)
   const params = new URLSearchParams(window.location.search);
-  if(!params.has('portal')) return;
+  const hasPortal = params.has('portal') || window.location.hash.startsWith('#portal');
+  if(!hasPortal) return;
 
   // ── पूर्ण app-shell लपवा ──
   const shell = document.getElementById('app-shell');
@@ -8187,7 +8191,7 @@ document.addEventListener('DOMContentLoaded',async ()=>{
 <style>
 .cp-dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:transparent;transition:all .2s}
 .cp-dot.filled{background:var(--gold);border-color:var(--gold)}
-.cp-key{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;color:#fff;font-size:20px;font-weight:600;padding:16px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.cp-key{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;color:#fff;font-size:22px;font-weight:600;padding:18px 10px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;min-height:60px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .cp-key:hover{background:rgba(255,255,255,.18)}
 .cp-key:active{transform:scale(.92)}
 .cp-key-clr{font-size:16px;color:rgba(255,255,255,.6)}
@@ -8281,7 +8285,8 @@ async function cpSubmit() {
   if (pin.length < 4) return;
 
   // Firebase वरून fresh data load करा (portal mode मध्ये)
-  if(new URLSearchParams(window.location.search).has('portal')){
+  const _isPortal = new URLSearchParams(window.location.search).has('portal') || window.location.hash.startsWith('#portal');
+  if(_isPortal){
     try{
       // Firebase URL — URL param मधून किंवा localStorage मधून
       const _params = new URLSearchParams(window.location.search);
