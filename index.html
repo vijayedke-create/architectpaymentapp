@@ -3474,7 +3474,7 @@ function saveContact(){
     c.phone=document.getElementById('c-phone').value.trim();
     c.address=document.getElementById('c-address').value.trim();
     c.source=srcEl?srcEl.value:'';
-    c.pin=pin||c.pin||null;
+    c.pin=pin?String(pin):c.pin||null;
     db.activities.unshift({text:'Contact Updated — '+name,sub:'Category: '+finalCat,time:'Just now',color:'#1a3a2a'});
     saveAll();closeModal('m-contact');renderContacts();renderDashboard();
     showOk('✅ Contact updated!');
@@ -7803,8 +7803,8 @@ function toggleTheme(){
 // CLIENT PORTAL — URL HASH MODE
 // ════════════════════════════════════════════════
 function checkPortalMode(){
-  const hash = window.location.hash;
-  if(!hash.startsWith('#portal')) return;
+  const params = new URLSearchParams(window.location.search);
+  if(!params.has('portal')) return;
 
   // ── पूर्ण app-shell लपवा ──
   const shell = document.getElementById('app-shell');
@@ -7830,8 +7830,8 @@ function checkPortalMode(){
   if(li&&officeInfo.logo){li.src=officeInfo.logo;li.style.display='block';li.style.filter='none';}
 
   // ── Back button block ──
-  window.history.replaceState(null,'','#portal');
-  window.onpopstate=()=>window.history.replaceState(null,'','#portal');
+  window.history.replaceState(null,'',window.location.pathname+'?portal=1');
+  window.onpopstate=()=>window.history.replaceState(null,'',window.location.pathname+'?portal=1');
 }
 
 function initTheme(){
@@ -8241,9 +8241,8 @@ function closeClientPortal() {
   const shell=document.getElementById('app-shell');
   if(shell) shell.style.display='';
   // Clear hash
-  if(window.location.hash.startsWith('#portal')){
-    window.history.replaceState(null,'',window.location.pathname);
-    window.onpopstate=null;
+  if(new URLSearchParams(window.location.search).has('portal')){
+    window.history.replaceState(null,'',window.location.pathname+'?portal=1');
   }
   document.body.style.overflow = '';
 }
@@ -8282,14 +8281,18 @@ async function cpSubmit() {
   if (pin.length < 4) return;
 
   // Firebase वरून fresh data load करा (portal mode मध्ये)
-  if(window.location.hash.startsWith('#portal')){
+  if(new URLSearchParams(window.location.search).has('portal')){
     try{
       const fbUrl = localStorage.getItem('gs_fb_url');
       if(fbUrl){
         const r = await fetch(fbUrl+'/.json');
         if(r.ok){
           const data = await r.json();
-          if(data&&data.db) db = data.db;
+          if(data&&data.db){
+            db = data.db;
+            // PIN नेहमी string असावा — Firebase number म्हणून save करतो
+            (db.contacts||[]).forEach(c=>{ if(c.pin) c.pin=String(c.pin); });
+          }
           if(data&&data.officeInfo) officeInfo = data.officeInfo;
         }
       } else {
@@ -8300,8 +8303,13 @@ async function cpSubmit() {
     }catch(e){ console.warn('PIN check data load:', e); }
   }
 
-  // PIN match शोधा
-  const match = (db.contacts || []).find(c => c.pin && String(c.pin).trim() === String(pin).trim());
+  // PIN match — String compare on both sides (Firebase may store as number)
+  const match = (db.contacts || []).find(c => {
+    if(!c.pin) return false;
+    const stored = String(c.pin).trim().padStart(4,'0');
+    const entered = String(pin).trim().padStart(4,'0');
+    return stored === entered;
+  });
   if (!match) {
     document.getElementById('cp-error').style.display = 'block';
     const dotsEl = document.getElementById('cp-pin-dots');
@@ -8708,7 +8716,7 @@ function cpSetPin(cid) {
   // Check duplicate
   const dup = db.contacts.find(x => x.id !== cid && x.pin === cleaned);
   if (dup) { alert('हा PIN already ' + dup.name + ' ला दिला आहे. Different PIN वापरा.'); return; }
-  c.pin = cleaned;
+  c.pin = String(cleaned); // always save as string
   saveAll();
   renderClientPortalMgr();
   showOk('✅ PIN set: ' + cleaned + ' — ' + c.name + ' ला WhatsApp वर पाठवा');
@@ -8727,25 +8735,23 @@ function cpWhatsApp(cid) {
   if (!c || !c.pin) { showErr('PIN set करा आधी'); return; }
   // Build client portal URL — same folder, client-portal.html
   // Portal URL = same file + #portal hash
-  const portalUrl = window.location.href.split('#')[0] + '#portal';
-  const msg = `🏗️ *${officeInfo.name || 'Greenhouse Studio'}*
-━━━━━━━━━━━━━━━━
-Dear *${c.name}*,
+  const _base = window.location.href.split('?')[0].split('#')[0];
+  const portalUrl = _base + '?portal=1';
+  const msg = `Dear ${c.name},
 
-आपला *Client Portal* तयार आहे! 🎉
+आपला Client Portal तयार आहे! 🎉
 
-*लिंक उघडा:*
 ${portalUrl}
 
-*PIN: ${c.pin}*
+PIN: ${c.pin}
 
 Portal मध्ये पाहता येईल:
-✅ Project stage & progress
+✅ Project progress
 ✅ Payment history
-✅ Site visit reports & photos
-✅ Released drawings
+✅ Site visit reports
+✅ Drawings
 
-_Ar. ${officeInfo.arch || ''} | ${officeInfo.name || 'Greenhouse Studio'}_`;
+- ${officeInfo.arch || ''} | ${officeInfo.name || 'Greenhouse Studio'}`;
   const waUrl = 'https://wa.me/' + formatWA(c.wa || c.phone || '') + '?text=' + encodeURIComponent(msg);
   window.open(waUrl, '_blank');
 }
