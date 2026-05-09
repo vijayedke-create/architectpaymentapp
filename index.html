@@ -1825,14 +1825,124 @@ td.mono { font-variant-numeric: tabular-nums; }
 ══════════════════════════════════════════════════ -->
 <div id="pg-calculator" class="page">
   <div class="subtabs">
-    <button class="subtab active" onclick="calcTabFn('slab')">🏗️ Slab Calculator</button>
+    <button class="subtab active" onclick="calcTabFn('steel')">🔧 Steel Calculator</button>
+    <button class="subtab" onclick="calcTabFn('slab')">🏗️ Slab Calculator</button>
     <button class="subtab" onclick="calcTabFn('brick')">🧱 Brick Calculator</button>
     <button class="subtab" onclick="calcTabFn('plaster')">🪣 Plaster</button>
     <button class="subtab" onclick="calcTabFn('paint')">🎨 Paint</button>
     <button class="subtab" onclick="calcTabFn('concrete')">⚗️ Concrete Mix</button>
   </div>
 
-  <div id="calc-slab">
+  <!-- Steel Calculator -->
+  <div id="calc-steel">
+    <div class="card card-pad" style="max-width:800px">
+      <div class="card-header"><div class="card-title"><span class="ct-icon">🔧</span> Steel Calculator (Footing, Column, Beam, Slab)</div></div>
+      
+      <!-- Element Type Selector -->
+      <div style="margin-bottom:16px">
+        <label style="font-weight:600;display:block;margin-bottom:8px">Select Element Type:</label>
+        <select id="steel_element_type" onchange="showSteelElementForm()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;font-size:14px">
+          <option value="">-- Select Element --</option>
+          <option value="footing">🏗️ Footing</option>
+          <option value="column">🏛️ Column</option>
+          <option value="plinth_beam">📐 Plinth Beam</option>
+          <option value="beam">🌉 Beam</option>
+          <option value="slab">🏢 Slab</option>
+        </select>
+      </div>
+      
+      <!-- Footing Form -->
+      <div id="steel_footing_form" style="display:none">
+        <div style="background:#f0f9ff;padding:12px;border-radius:6px;margin-bottom:16px">
+          <div style="font-weight:600;color:#0369a1;margin-bottom:8px">🏗️ Footing Details</div>
+          <div class="form-grid">
+            <div class="fg"><label>Length (m)</label><input type="number" id="ft_length" placeholder="2" oninput="calcSteelFooting()"></div>
+            <div class="fg"><label>Width (m)</label><input type="number" id="ft_width" placeholder="2" oninput="calcSteelFooting()"></div>
+            <div class="fg"><label>Depth (m)</label><input type="number" id="ft_depth" placeholder="0.6" oninput="calcSteelFooting()"></div>
+            <div class="fg"><label>Main Bar Dia (mm)</label><input type="number" id="ft_main_dia" placeholder="16" oninput="calcSteelFooting()"></div>
+            <div class="fg"><label>Main Bar Spacing (mm)</label><input type="number" id="ft_spacing" placeholder="150" oninput="calcSteelFooting()"></div>
+            <div class="fg"><label>Number of Footings</label><input type="number" id="ft_count" placeholder="1" value="1" oninput="calcSteelFooting()"></div>
+          </div>
+        </div>
+        <div id="footingResult" class="calc-result" style="display:none"></div>
+      </div>
+      
+      <!-- Column Form -->
+      <div id="steel_column_form" style="display:none">
+        <div style="background:#fef3c7;padding:12px;border-radius:6px;margin-bottom:16px">
+          <div style="font-weight:600;color:#92400e;margin-bottom:8px">🏛️ Column Details</div>
+          <div class="form-grid">
+            <div class="fg"><label>Column Size (mm)</label><input type="text" id="col_size" placeholder="e.g. 230x300" oninput="calcSteelColumn()"></div>
+            <div class="fg"><label>Column Height (m)</label><input type="number" id="col_height" placeholder="3" oninput="calcSteelColumn()"></div>
+            <div class="fg"><label>Number of Main Bars</label><input type="number" id="col_main_bars" placeholder="4" oninput="calcSteelColumn()"></div>
+            <div class="fg"><label>Main Bar Dia (mm)</label><input type="number" id="col_main_dia" placeholder="16" oninput="calcSteelColumn()"></div>
+            <div class="fg"><label>Stirrup Bar Dia (mm)</label><input type="number" id="col_stirrup_dia" placeholder="8" oninput="calcSteelColumn()"></div>
+            <div class="fg"><label>Stirrup Spacing (mm)</label><input type="number" id="col_stirrup_spacing" placeholder="150" oninput="calcSteelColumn()"></div>
+            <div class="fg"><label>Number of Columns</label><input type="number" id="col_count" placeholder="1" value="1" oninput="calcSteelColumn()"></div>
+          </div>
+        </div>
+        <div id="columnResult" class="calc-result" style="display:none"></div>
+      </div>
+      
+      <!-- Plinth Beam Form -->
+      <div id="steel_plinth_form" style="display:none">
+        <div style="background:#f3e8ff;padding:12px;border-radius:6px;margin-bottom:16px">
+          <div style="font-weight:600;color:#6b21a8;margin-bottom:8px">📐 Plinth Beam Details</div>
+          <div class="form-grid">
+            <div class="fg"><label>Beam Size (mm)</label><input type="text" id="pb_size" placeholder="e.g. 230x300" oninput="calcSteelPlinth()"></div>
+            <div class="fg"><label>Beam Length (m)</label><input type="number" id="pb_length" placeholder="5" oninput="calcSteelPlinth()"></div>
+            <div class="fg"><label>Top Bars (No.)</label><input type="number" id="pb_top_bars" placeholder="2" oninput="calcSteelPlinth()"></div>
+            <div class="fg"><label>Top Bar Dia (mm)</label><input type="number" id="pb_top_dia" placeholder="12" oninput="calcSteelPlinth()"></div>
+            <div class="fg"><label>Bottom Bars (No.)</label><input type="number" id="pb_bottom_bars" placeholder="2" oninput="calcSteelPlinth()"></div>
+            <div class="fg"><label>Bottom Bar Dia (mm)</label><input type="number" id="pb_bottom_dia" placeholder="12" oninput="calcSteelPlinth()"></div>
+            <div class="fg"><label>Stirrup Dia (mm)</label><input type="number" id="pb_stirrup_dia" placeholder="8" oninput="calcSteelPlinth()"></div>
+            <div class="fg"><label>Stirrup Spacing (mm)</label><input type="number" id="pb_stirrup_spacing" placeholder="150" oninput="calcSteelPlinth()"></div>
+            <div class="fg"><label>Number of Beams</label><input type="number" id="pb_count" placeholder="1" value="1" oninput="calcSteelPlinth()"></div>
+          </div>
+        </div>
+        <div id="plinthResult" class="calc-result" style="display:none"></div>
+      </div>
+      
+      <!-- Beam Form -->
+      <div id="steel_beam_form" style="display:none">
+        <div style="background:#fce7f3;padding:12px;border-radius:6px;margin-bottom:16px">
+          <div style="font-weight:600;color:#9f1239;margin-bottom:8px">🌉 Beam Details</div>
+          <div class="form-grid">
+            <div class="fg"><label>Beam Size (mm)</label><input type="text" id="bm_size" placeholder="e.g. 230x450" oninput="calcSteelBeam()"></div>
+            <div class="fg"><label>Beam Length (m)</label><input type="number" id="bm_length" placeholder="5" oninput="calcSteelBeam()"></div>
+            <div class="fg"><label>Top Bars (No.)</label><input type="number" id="bm_top_bars" placeholder="3" oninput="calcSteelBeam()"></div>
+            <div class="fg"><label>Top Bar Dia (mm)</label><input type="number" id="bm_top_dia" placeholder="16" oninput="calcSteelBeam()"></div>
+            <div class="fg"><label>Bottom Bars (No.)</label><input type="number" id="bm_bottom_bars" placeholder="2" oninput="calcSteelBeam()"></div>
+            <div class="fg"><label>Bottom Bar Dia (mm)</label><input type="number" id="bm_bottom_dia" placeholder="12" oninput="calcSteelBeam()"></div>
+            <div class="fg"><label>Stirrup Dia (mm)</label><input type="number" id="bm_stirrup_dia" placeholder="8" oninput="calcSteelBeam()"></div>
+            <div class="fg"><label>Stirrup Spacing (mm)</label><input type="number" id="bm_stirrup_spacing" placeholder="150" oninput="calcSteelBeam()"></div>
+            <div class="fg"><label>Number of Beams</label><input type="number" id="bm_count" placeholder="1" value="1" oninput="calcSteelBeam()"></div>
+          </div>
+        </div>
+        <div id="beamResult" class="calc-result" style="display:none"></div>
+      </div>
+      
+      <!-- Slab Form -->
+      <div id="steel_slab_form" style="display:none">
+        <div style="background:#dcfce7;padding:12px;border-radius:6px;margin-bottom:16px">
+          <div style="font-weight:600;color:#14532d;margin-bottom:8px">🏢 Slab Details</div>
+          <div class="form-grid">
+            <div class="fg"><label>Length (m)</label><input type="number" id="slb_length" placeholder="10" oninput="calcSteelSlab()"></div>
+            <div class="fg"><label>Width (m)</label><input type="number" id="slb_width" placeholder="8" oninput="calcSteelSlab()"></div>
+            <div class="fg"><label>Thickness (mm)</label><input type="number" id="slb_thickness" placeholder="125" oninput="calcSteelSlab()"></div>
+            <div class="fg"><label>Main Bar Dia (mm)</label><input type="number" id="slb_main_dia" placeholder="10" oninput="calcSteelSlab()"></div>
+            <div class="fg"><label>Main Bar Spacing (mm)</label><input type="number" id="slb_main_spacing" placeholder="150" oninput="calcSteelSlab()"></div>
+            <div class="fg"><label>Distribution Bar Dia (mm)</label><input type="number" id="slb_dist_dia" placeholder="8" oninput="calcSteelSlab()"></div>
+            <div class="fg"><label>Distribution Spacing (mm)</label><input type="number" id="slb_dist_spacing" placeholder="200" oninput="calcSteelSlab()"></div>
+          </div>
+        </div>
+        <div id="slabSteelResult" class="calc-result" style="display:none"></div>
+      </div>
+      
+    </div>
+  </div>
+
+  <div id="calc-slab" style="display:none">
     <div class="card card-pad" style="max-width:600px">
       <div class="card-header"><div class="card-title"><span class="ct-icon">🏗️</span> RCC Slab Material Calculator</div></div>
       <div class="form-grid">
@@ -2765,11 +2875,272 @@ function siteTab(tab){
 }
 
 function calcTabFn(tab){
-  subTabShow('calc',['slab','brick','plaster','paint','concrete'],tab);
+  subTabShow('calc',['steel','slab','brick','plaster','paint','concrete'],tab);
   document.querySelectorAll('#pg-calculator .subtabs .subtab').forEach((b,i)=>{
-    const tabs=['slab','brick','plaster','paint','concrete'];
+    const tabs=['steel','slab','brick','plaster','paint','concrete'];
     b.classList.toggle('active',tabs[i]===tab);
   });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  STEEL CALCULATOR
+// ══════════════════════════════════════════════════════════════
+function showSteelElementForm(){
+  const type = document.getElementById('steel_element_type')?.value;
+  const forms = ['steel_footing_form','steel_column_form','steel_plinth_form','steel_beam_form','steel_slab_form'];
+  forms.forEach(f=>{ const el=document.getElementById(f); if(el) el.style.display='none'; });
+  
+  if(type === 'footing') document.getElementById('steel_footing_form').style.display = 'block';
+  else if(type === 'column') document.getElementById('steel_column_form').style.display = 'block';
+  else if(type === 'plinth_beam') document.getElementById('steel_plinth_form').style.display = 'block';
+  else if(type === 'beam') document.getElementById('steel_beam_form').style.display = 'block';
+  else if(type === 'slab') document.getElementById('steel_slab_form').style.display = 'block';
+}
+
+function calcSteelFooting(){
+  const L = parseFloat(document.getElementById('ft_length')?.value) || 0;
+  const W = parseFloat(document.getElementById('ft_width')?.value) || 0;
+  const D = parseFloat(document.getElementById('ft_depth')?.value) || 0;
+  const dia = parseFloat(document.getElementById('ft_main_dia')?.value) || 0;
+  const spacing = parseFloat(document.getElementById('ft_spacing')?.value) || 0;
+  const count = parseFloat(document.getElementById('ft_count')?.value) || 1;
+  
+  if(!L || !W || !D || !dia || !spacing) return;
+  
+  // Calculate bars needed in each direction
+  const barsLength = Math.ceil((W*1000)/spacing) + 1;
+  const barsWidth = Math.ceil((L*1000)/spacing) + 1;
+  
+  // Bar length with development length (add 40d on each side)
+  const devLength = 40 * dia / 1000; // in meters
+  const barLenL = L + 2*devLength;
+  const barLenW = W + 2*devLength;
+  
+  // Total length
+  const totalLength = (barsLength * barLenL + barsWidth * barLenW) * count;
+  
+  // Weight calculation (weight = D²/162 * Length)
+  const weightPerMeter = (dia * dia) / 162;
+  const totalWeight = weightPerMeter * totalLength;
+  
+  const result = document.getElementById('footingResult');
+  result.style.display = 'block';
+  result.innerHTML = `
+    <div style="background:#f0f9ff;padding:16px;border-radius:8px">
+      <div style="font-weight:700;font-size:16px;margin-bottom:12px;color:#0369a1">📊 Footing Steel Calculation</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px">
+        <div><strong>Bars in Length:</strong> ${barsLength} nos</div>
+        <div><strong>Bars in Width:</strong> ${barsWidth} nos</div>
+        <div><strong>Bar Length (L):</strong> ${barLenL.toFixed(2)} m</div>
+        <div><strong>Bar Length (W):</strong> ${barLenW.toFixed(2)} m</div>
+        <div><strong>Total Length:</strong> ${totalLength.toFixed(2)} m</div>
+        <div><strong>Bar Diameter:</strong> ${dia} mm</div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#0369a1;color:white;border-radius:6px;text-align:center">
+        <div style="font-size:14px;opacity:0.9">Total Steel Required</div>
+        <div style="font-size:28px;font-weight:700">${totalWeight.toFixed(2)} Kg</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px">For ${count} footing(s)</div>
+      </div>
+    </div>
+  `;
+}
+
+function calcSteelColumn(){
+  const size = document.getElementById('col_size')?.value || '';
+  const H = parseFloat(document.getElementById('col_height')?.value) || 0;
+  const mainBars = parseFloat(document.getElementById('col_main_bars')?.value) || 0;
+  const mainDia = parseFloat(document.getElementById('col_main_dia')?.value) || 0;
+  const stirrupDia = parseFloat(document.getElementById('col_stirrup_dia')?.value) || 0;
+  const stirrupSpacing = parseFloat(document.getElementById('col_stirrup_spacing')?.value) || 0;
+  const count = parseFloat(document.getElementById('col_count')?.value) || 1;
+  
+  if(!H || !mainBars || !mainDia || !stirrupDia || !stirrupSpacing) return;
+  
+  // Parse column size (e.g., "230x300")
+  const dims = size.split('x').map(d=>parseFloat(d.trim()));
+  const b = dims[0] || 230;
+  const d = dims[1] || 300;
+  
+  // Main bar weight
+  const mainBarLength = H * mainBars * count;
+  const mainBarWeight = (mainDia * mainDia / 162) * mainBarLength;
+  
+  // Stirrup calculation
+  const stirrupLength = 2*(b+d) / 1000; // perimeter in meters
+  const numberOfStirrups = Math.ceil((H*1000) / stirrupSpacing);
+  const totalStirrupLength = stirrupLength * numberOfStirrups * count;
+  const stirrupWeight = (stirrupDia * stirrupDia / 162) * totalStirrupLength;
+  
+  const totalWeight = mainBarWeight + stirrupWeight;
+  
+  const result = document.getElementById('columnResult');
+  result.style.display = 'block';
+  result.innerHTML = `
+    <div style="background:#fef3c7;padding:16px;border-radius:8px">
+      <div style="font-weight:700;font-size:16px;margin-bottom:12px;color:#92400e">📊 Column Steel Calculation</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px">
+        <div><strong>Column Size:</strong> ${b}×${d} mm</div>
+        <div><strong>Height:</strong> ${H} m</div>
+        <div><strong>Main Bars:</strong> ${mainBars} nos × ${mainDia}mm</div>
+        <div><strong>Main Bar Weight:</strong> ${mainBarWeight.toFixed(2)} Kg</div>
+        <div><strong>Stirrups:</strong> ${numberOfStirrups} nos × ${stirrupDia}mm</div>
+        <div><strong>Stirrup Weight:</strong> ${stirrupWeight.toFixed(2)} Kg</div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#92400e;color:white;border-radius:6px;text-align:center">
+        <div style="font-size:14px;opacity:0.9">Total Steel Required</div>
+        <div style="font-size:28px;font-weight:700">${totalWeight.toFixed(2)} Kg</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px">For ${count} column(s)</div>
+      </div>
+    </div>
+  `;
+}
+
+function calcSteelPlinth(){
+  const size = document.getElementById('pb_size')?.value || '';
+  const L = parseFloat(document.getElementById('pb_length')?.value) || 0;
+  const topBars = parseFloat(document.getElementById('pb_top_bars')?.value) || 0;
+  const topDia = parseFloat(document.getElementById('pb_top_dia')?.value) || 0;
+  const bottomBars = parseFloat(document.getElementById('pb_bottom_bars')?.value) || 0;
+  const bottomDia = parseFloat(document.getElementById('pb_bottom_dia')?.value) || 0;
+  const stirrupDia = parseFloat(document.getElementById('pb_stirrup_dia')?.value) || 0;
+  const stirrupSpacing = parseFloat(document.getElementById('pb_stirrup_spacing')?.value) || 0;
+  const count = parseFloat(document.getElementById('pb_count')?.value) || 1;
+  
+  if(!L || !topBars || !topDia || !bottomBars || !bottomDia || !stirrupDia || !stirrupSpacing) return;
+  
+  const dims = size.split('x').map(d=>parseFloat(d.trim()));
+  const b = dims[0] || 230;
+  const d = dims[1] || 300;
+  
+  // Main bars weight
+  const topBarWeight = (topDia*topDia/162) * topBars * L * count;
+  const bottomBarWeight = (bottomDia*bottomDia/162) * bottomBars * L * count;
+  
+  // Stirrup calculation
+  const stirrupLength = 2*(b+d) / 1000;
+  const numberOfStirrups = Math.ceil((L*1000) / stirrupSpacing);
+  const totalStirrupLength = stirrupLength * numberOfStirrups * count;
+  const stirrupWeight = (stirrupDia*stirrupDia/162) * totalStirrupLength;
+  
+  const totalWeight = topBarWeight + bottomBarWeight + stirrupWeight;
+  
+  const result = document.getElementById('plinthResult');
+  result.style.display = 'block';
+  result.innerHTML = `
+    <div style="background:#f3e8ff;padding:16px;border-radius:8px">
+      <div style="font-weight:700;font-size:16px;margin-bottom:12px;color:#6b21a8">📊 Plinth Beam Steel Calculation</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px">
+        <div><strong>Beam Size:</strong> ${b}×${d} mm</div>
+        <div><strong>Length:</strong> ${L} m</div>
+        <div><strong>Top Bars:</strong> ${topBars} nos × ${topDia}mm = ${topBarWeight.toFixed(2)} Kg</div>
+        <div><strong>Bottom Bars:</strong> ${bottomBars} nos × ${bottomDia}mm = ${bottomBarWeight.toFixed(2)} Kg</div>
+        <div><strong>Stirrups:</strong> ${numberOfStirrups} nos × ${stirrupDia}mm = ${stirrupWeight.toFixed(2)} Kg</div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#6b21a8;color:white;border-radius:6px;text-align:center">
+        <div style="font-size:14px;opacity:0.9">Total Steel Required</div>
+        <div style="font-size:28px;font-weight:700">${totalWeight.toFixed(2)} Kg</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px">For ${count} beam(s)</div>
+      </div>
+    </div>
+  `;
+}
+
+function calcSteelBeam(){
+  const size = document.getElementById('bm_size')?.value || '';
+  const L = parseFloat(document.getElementById('bm_length')?.value) || 0;
+  const topBars = parseFloat(document.getElementById('bm_top_bars')?.value) || 0;
+  const topDia = parseFloat(document.getElementById('bm_top_dia')?.value) || 0;
+  const bottomBars = parseFloat(document.getElementById('bm_bottom_bars')?.value) || 0;
+  const bottomDia = parseFloat(document.getElementById('bm_bottom_dia')?.value) || 0;
+  const stirrupDia = parseFloat(document.getElementById('bm_stirrup_dia')?.value) || 0;
+  const stirrupSpacing = parseFloat(document.getElementById('bm_stirrup_spacing')?.value) || 0;
+  const count = parseFloat(document.getElementById('bm_count')?.value) || 1;
+  
+  if(!L || !topBars || !topDia || !bottomBars || !bottomDia || !stirrupDia || !stirrupSpacing) return;
+  
+  const dims = size.split('x').map(d=>parseFloat(d.trim()));
+  const b = dims[0] || 230;
+  const d = dims[1] || 450;
+  
+  const topBarWeight = (topDia*topDia/162) * topBars * L * count;
+  const bottomBarWeight = (bottomDia*bottomDia/162) * bottomBars * L * count;
+  
+  const stirrupLength = 2*(b+d) / 1000;
+  const numberOfStirrups = Math.ceil((L*1000) / stirrupSpacing);
+  const totalStirrupLength = stirrupLength * numberOfStirrups * count;
+  const stirrupWeight = (stirrupDia*stirrupDia/162) * totalStirrupLength;
+  
+  const totalWeight = topBarWeight + bottomBarWeight + stirrupWeight;
+  
+  const result = document.getElementById('beamResult');
+  result.style.display = 'block';
+  result.innerHTML = `
+    <div style="background:#fce7f3;padding:16px;border-radius:8px">
+      <div style="font-weight:700;font-size:16px;margin-bottom:12px;color:#9f1239">📊 Beam Steel Calculation</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px">
+        <div><strong>Beam Size:</strong> ${b}×${d} mm</div>
+        <div><strong>Length:</strong> ${L} m</div>
+        <div><strong>Top Bars:</strong> ${topBars} nos × ${topDia}mm = ${topBarWeight.toFixed(2)} Kg</div>
+        <div><strong>Bottom Bars:</strong> ${bottomBars} nos × ${bottomDia}mm = ${bottomBarWeight.toFixed(2)} Kg</div>
+        <div><strong>Stirrups:</strong> ${numberOfStirrups} nos × ${stirrupDia}mm = ${stirrupWeight.toFixed(2)} Kg</div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#9f1239;color:white;border-radius:6px;text-align:center">
+        <div style="font-size:14px;opacity:0.9">Total Steel Required</div>
+        <div style="font-size:28px;font-weight:700">${totalWeight.toFixed(2)} Kg</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px">For ${count} beam(s)</div>
+      </div>
+    </div>
+  `;
+}
+
+function calcSteelSlab(){
+  const L = parseFloat(document.getElementById('slb_length')?.value) || 0;
+  const W = parseFloat(document.getElementById('slb_width')?.value) || 0;
+  const T = parseFloat(document.getElementById('slb_thickness')?.value) || 0;
+  const mainDia = parseFloat(document.getElementById('slb_main_dia')?.value) || 0;
+  const mainSpacing = parseFloat(document.getElementById('slb_main_spacing')?.value) || 0;
+  const distDia = parseFloat(document.getElementById('slb_dist_dia')?.value) || 0;
+  const distSpacing = parseFloat(document.getElementById('slb_dist_spacing')?.value) || 0;
+  
+  if(!L || !W || !T || !mainDia || !mainSpacing || !distDia || !distSpacing) return;
+  
+  // Main bars (along length)
+  const mainBarsCount = Math.ceil((W*1000)/mainSpacing) + 1;
+  const mainBarLength = L;
+  const mainBarTotalLength = mainBarsCount * mainBarLength;
+  const mainBarWeight = (mainDia*mainDia/162) * mainBarTotalLength;
+  
+  // Distribution bars (along width)
+  const distBarsCount = Math.ceil((L*1000)/distSpacing) + 1;
+  const distBarLength = W;
+  const distBarTotalLength = distBarsCount * distBarLength;
+  const distBarWeight = (distDia*distDia/162) * distBarTotalLength;
+  
+  const totalWeight = mainBarWeight + distBarWeight;
+  const area = L * W;
+  const weightPerSqm = totalWeight / area;
+  
+  const result = document.getElementById('slabSteelResult');
+  result.style.display = 'block';
+  result.innerHTML = `
+    <div style="background:#dcfce7;padding:16px;border-radius:8px">
+      <div style="font-weight:700;font-size:16px;margin-bottom:12px;color:#14532d">📊 Slab Steel Calculation</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px">
+        <div><strong>Slab Area:</strong> ${area.toFixed(2)} m²</div>
+        <div><strong>Thickness:</strong> ${T} mm</div>
+        <div><strong>Main Bars:</strong> ${mainBarsCount} nos × ${mainDia}mm @ ${mainSpacing}mm c/c</div>
+        <div><strong>Main Bar Weight:</strong> ${mainBarWeight.toFixed(2)} Kg</div>
+        <div><strong>Distribution:</strong> ${distBarsCount} nos × ${distDia}mm @ ${distSpacing}mm c/c</div>
+        <div><strong>Distribution Weight:</strong> ${distBarWeight.toFixed(2)} Kg</div>
+        <div><strong>Steel/m²:</strong> ${weightPerSqm.toFixed(2)} Kg/m²</div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#14532d;color:white;border-radius:6px;text-align:center">
+        <div style="font-size:14px;opacity:0.9">Total Steel Required</div>
+        <div style="font-size:28px;font-weight:700">${totalWeight.toFixed(2)} Kg</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:4px">For ${L}m × ${W}m slab</div>
+      </div>
+    </div>
+  `;
 }
 
 // ══════════════════════════════════════════════════════════════
