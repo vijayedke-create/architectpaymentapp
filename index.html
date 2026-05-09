@@ -708,20 +708,11 @@ td.mono { font-variant-numeric: tabular-nums; }
       <div class="form-grid">
         <div class="fg"><label>Date *</label><input type="date" id="m_date"></div>
         <div class="fg"><label>Material *</label>
-          <select id="m_type">
+          <select id="m_type" onchange="handleMaterialTypeChange()">
             <option value="">-- Select --</option>
             <option>Cement</option><option>Sand</option>
             <option>Aggregate / Metal</option><option>Brick</option>
-            <optgroup label="TMT Steel Bars">
-              <option>TMT Bar 8mm</option>
-              <option>TMT Bar 10mm</option>
-              <option>TMT Bar 12mm</option>
-              <option>TMT Bar 16mm</option>
-              <option>TMT Bar 20mm</option>
-              <option>TMT Bar 25mm</option>
-              <option>TMT Bar 32mm</option>
-              <option>Binding Wire</option>
-            </optgroup>
+            <option>Steel / TMT Bar</option>
             <option>Steel Angle/Channel</option>
             <option>Water Tanker</option><option>Timber</option>
             <option>Block</option><option>Tiles</option>
@@ -741,6 +732,103 @@ td.mono { font-variant-numeric: tabular-nums; }
             <option>Hamali (Loading/Unloading)</option>
             <option>Fly Ash</option><option>Other</option>
           </select>
+        </div>
+        
+        <!-- Steel/TMT Multi-Bar Entry Form (shows when Steel selected) -->
+        <div id="steelMultiBarForm" style="display:none;grid-column:1/-1">
+          <div class="card" style="background:var(--bg-light);padding:16px;border-radius:8px;margin-top:8px">
+            <div style="font-weight:700;margin-bottom:12px;color:var(--pri)">📊 Steel/TMT Bar Details (एकाच बिलात सर्व bars)</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+              
+              <!-- 8mm -->
+              <div style="background:white;padding:12px;border-radius:6px;border:1px solid var(--border)">
+                <div style="font-weight:600;margin-bottom:8px;color:#333">8mm TMT Bar</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="number" id="steel_8mm_kg" placeholder="Kg" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                  <input type="number" id="steel_8mm_rate" placeholder="Rate/Kg (₹)" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                </div>
+              </div>
+              
+              <!-- 10mm -->
+              <div style="background:white;padding:12px;border-radius:6px;border:1px solid var(--border)">
+                <div style="font-weight:600;margin-bottom:8px;color:#333">10mm TMT Bar</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="number" id="steel_10mm_kg" placeholder="Kg" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                  <input type="number" id="steel_10mm_rate" placeholder="Rate/Kg (₹)" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                </div>
+              </div>
+              
+              <!-- 12mm -->
+              <div style="background:white;padding:12px;border-radius:6px;border:1px solid var(--border)">
+                <div style="font-weight:600;margin-bottom:8px;color:#333">12mm TMT Bar</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="number" id="steel_12mm_kg" placeholder="Kg" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                  <input type="number" id="steel_12mm_rate" placeholder="Rate/Kg (₹)" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                </div>
+              </div>
+              
+              <!-- 16mm -->
+              <div style="background:white;padding:12px;border-radius:6px;border:1px solid var(--border)">
+                <div style="font-weight:600;margin-bottom:8px;color:#333">16mm TMT Bar</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="number" id="steel_16mm_kg" placeholder="Kg" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                  <input type="number" id="steel_16mm_rate" placeholder="Rate/Kg (₹)" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                </div>
+              </div>
+              
+              <!-- 20mm -->
+              <div style="background:white;padding:12px;border-radius:6px;border:1px solid var(--border)">
+                <div style="font-weight:600;margin-bottom:8px;color:#333">20mm TMT Bar</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="number" id="steel_20mm_kg" placeholder="Kg" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                  <input type="number" id="steel_20mm_rate" placeholder="Rate/Kg (₹)" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                </div>
+              </div>
+              
+              <!-- 25mm -->
+              <div style="background:white;padding:12px;border-radius:6px;border:1px solid var(--border)">
+                <div style="font-weight:600;margin-bottom:8px;color:#333">25mm TMT Bar</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="number" id="steel_25mm_kg" placeholder="Kg" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                  <input type="number" id="steel_25mm_rate" placeholder="Rate/Kg (₹)" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                </div>
+              </div>
+              
+              <!-- 32mm -->
+              <div style="background:white;padding:12px;border-radius:6px;border:1px solid var(--border)">
+                <div style="font-weight:600;margin-bottom:8px;color:#333">32mm TMT Bar</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="number" id="steel_32mm_kg" placeholder="Kg" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                  <input type="number" id="steel_32mm_rate" placeholder="Rate/Kg (₹)" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                </div>
+              </div>
+              
+              <!-- Binding Wire -->
+              <div style="background:white;padding:12px;border-radius:6px;border:1px solid var(--border)">
+                <div style="font-weight:600;margin-bottom:8px;color:#333">Binding Wire</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="number" id="steel_binding_kg" placeholder="Kg" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                  <input type="number" id="steel_binding_rate" placeholder="Rate/Kg (₹)" style="padding:6px;border:1px solid #ddd;border-radius:4px;font-size:13px">
+                </div>
+              </div>
+              
+            </div>
+            
+            <!-- Total Calculation -->
+            <div style="margin-top:16px;padding:12px;background:white;border-radius:6px;border:2px solid var(--pri)">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <div style="font-size:13px;color:var(--muted)">Total Steel Weight</div>
+                  <div style="font-size:20px;font-weight:700;color:var(--text)" id="steel_total_kg">0 Kg</div>
+                </div>
+                <div>
+                  <div style="font-size:13px;color:var(--muted)">Total Amount</div>
+                  <div style="font-size:24px;font-weight:700;color:var(--pri)" id="steel_total_amount">₹0</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-acc" onclick="calculateSteelTotal()">🔢 Calculate Total</button>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="fg"><label>Custom Name</label><input type="text" id="m_custom" placeholder="e.g. AAC Block"></div>
         <div class="fg"><label>Supplier *</label><input type="text" id="m_supplier" placeholder="e.g. Rajesh Traders" list="supplierList"><datalist id="supplierList"></datalist></div>
@@ -2638,16 +2726,95 @@ function renderSupplierDatalist(){
   const suppliers=[...new Set(materials.map(m=>m.supplier).filter(Boolean))];
   document.getElementById('supplierList').innerHTML=suppliers.map(s=>`<option value="${s}">`).join('');
 }
+// ══════════════════════════════════════════════════════════════
+//  MATERIAL - STEEL MULTI-BAR ENTRY
+// ══════════════════════════════════════════════════════════════
+function handleMaterialTypeChange(){
+  const type = document.getElementById('m_type')?.value;
+  const steelForm = document.getElementById('steelMultiBarForm');
+  
+  if(type === 'Steel / TMT Bar'){
+    // Show multi-bar entry form
+    if(steelForm) steelForm.style.display = 'block';
+  } else {
+    // Hide multi-bar form
+    if(steelForm) steelForm.style.display = 'none';
+    // Clear all steel inputs
+    ['8mm','10mm','12mm','16mm','20mm','25mm','32mm','binding'].forEach(size=>{
+      const kgEl = document.getElementById(`steel_${size}_kg`);
+      const rateEl = document.getElementById(`steel_${size}_rate`);
+      if(kgEl) kgEl.value = '';
+      if(rateEl) rateEl.value = '';
+    });
+  }
+}
+
+function calculateSteelTotal(){
+  const sizes = ['8mm','10mm','12mm','16mm','20mm','25mm','32mm','binding'];
+  let totalKg = 0;
+  let totalAmount = 0;
+  
+  sizes.forEach(size=>{
+    const kg = parseFloat(document.getElementById(`steel_${size}_kg`)?.value) || 0;
+    const rate = parseFloat(document.getElementById(`steel_${size}_rate`)?.value) || 0;
+    totalKg += kg;
+    totalAmount += kg * rate;
+  });
+  
+  // Update display
+  document.getElementById('steel_total_kg').textContent = totalKg.toFixed(0) + ' Kg';
+  document.getElementById('steel_total_amount').textContent = '₹' + totalAmount.toLocaleString('en-IN');
+  
+  // Auto-fill total in main form
+  document.getElementById('m_total').value = totalAmount;
+  
+  return {totalKg, totalAmount};
+}
+
 function saveMaterial(){
   const type=document.getElementById('m_type').value;
   const custom=document.getElementById('m_custom').value.trim();
   const supplier=document.getElementById('m_supplier').value.trim();
-  const total=parseFloat(document.getElementById('m_total').value);
+  let total=parseFloat(document.getElementById('m_total').value);
+  
+  // Check if Steel/TMT and prepare details
+  let steelDetails = '';
+  if(type === 'Steel / TMT Bar'){
+    const sizes = ['8mm','10mm','12mm','16mm','20mm','25mm','32mm','binding'];
+    const bars = [];
+    sizes.forEach(size=>{
+      const kg = parseFloat(document.getElementById(`steel_${size}_kg`)?.value) || 0;
+      const rate = parseFloat(document.getElementById(`steel_${size}_rate`)?.value) || 0;
+      if(kg > 0){
+        const sizeLabel = size === 'binding' ? 'Binding Wire' : size.toUpperCase()+' TMT';
+        bars.push(`${sizeLabel}: ${kg}kg @ ₹${rate}/kg = ₹${(kg*rate).toLocaleString('en-IN')}`);
+      }
+    });
+    
+    if(bars.length === 0){
+      showToast('⚠️ Please enter at least one bar size with quantity and rate!','warn');
+      return;
+    }
+    
+    steelDetails = bars.join(' | ');
+    
+    // Recalculate total to ensure accuracy
+    const calc = calculateSteelTotal();
+    total = calc.totalAmount;
+  }
+  
   if(!type||!supplier||!total){ showToast('⚠️ Type, Supplier, Amount required!','warn'); return; }
   const advance=parseFloat(document.getElementById('m_advance').value)||0;
+  
+  // Create custom name with steel details
+  let finalCustom = custom;
+  if(type === 'Steel / TMT Bar' && steelDetails){
+    finalCustom = steelDetails;
+  }
+  
   const item={
     id:Date.now(), date:document.getElementById('m_date').value,
-    type:custom?type+' – '+custom:type, supplier, qty:document.getElementById('m_qty').value,
+    type:finalCustom?type+' – '+finalCustom:type, supplier, qty:document.getElementById('m_qty').value,
     unit:document.getElementById('m_unit').value, rate:document.getElementById('m_rate').value,
     total, paid:advance, invoice:document.getElementById('m_invoice').value,
     paymode:document.getElementById('m_paymode').value, stage:document.getElementById('m_stage').value,
@@ -2657,6 +2824,20 @@ function saveMaterial(){
   materials.push(item); saveAll(); renderSupplierDatalist();
   ['m_supplier','m_qty','m_rate','m_total','m_invoice','m_note','m_custom'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('m_advance').value='0'; document.getElementById('m_date').value=today();
+  
+  // Reset steel form
+  const steelForm = document.getElementById('steelMultiBarForm');
+  if(steelForm){
+    ['8mm','10mm','12mm','16mm','20mm','25mm','32mm','binding'].forEach(size=>{
+      const kgEl = document.getElementById(`steel_${size}_kg`);
+      const rateEl = document.getElementById(`steel_${size}_rate`);
+      if(kgEl) kgEl.value = '';
+      if(rateEl) rateEl.value = '';
+    });
+    document.getElementById('steel_total_kg').textContent = '0 Kg';
+    document.getElementById('steel_total_amount').textContent = '₹0';
+    steelForm.style.display = 'none';
+  }
   document.getElementById('m_type').value=''; document.getElementById('m_prev').innerHTML=''; document.getElementById('m_prev')._d=null;
   updateNavBadges(); showToast(t('matSaved'));
   // auto cashbook
